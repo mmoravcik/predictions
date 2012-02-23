@@ -1,0 +1,3 @@
+www/conf/local.py
+*.pyc
+#www/public/media/cache/*
