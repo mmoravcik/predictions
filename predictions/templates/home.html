@@ -1,0 +1,12 @@
+{% extends "base.html"  %}
+{% load i18n %}
+{% block content %}
+
+	Yes! Tangent score predictions!
+	<br /><br />
+	
+	Click on the round to submit your predictions:<br />
+	{% for round in game_rounds %}
+		<a href='/predict/{{ round.id }}'>{{ round.name }}</a>
+	{% endfor %}
+{% endblock %}

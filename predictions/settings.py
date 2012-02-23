@@ -3,6 +3,10 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+import os
+
+location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '', x)
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -106,7 +110,23 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    location("templates"),
 )
+
+
+#Context Processors
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.csrf',
+    'predictions.context_processors.game_rounds',
+)
+
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -146,3 +166,5 @@ LOGGING = {
         },
     }
 }
+
+AUTH_PROFILE_MODULE = "player.Profile"
