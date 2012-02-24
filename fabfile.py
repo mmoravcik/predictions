@@ -144,7 +144,7 @@ This is the main task for deployment.
     apache_reload()
     restart()
     delete_old_builds()
-    whoosh_setup()
+    #whoosh_setup()
 
 def _get_commit_id():
     "Returns the commit ID for the branch about to be deployed"
