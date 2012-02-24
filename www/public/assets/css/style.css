@@ -1,0 +1,119 @@
+* {
+
+font-family:arial;
+}
+
+.comment_form label {
+	display:none;
+}
+
+body {
+
+background-color:#f6f6f6;
+font-size:12px;
+	line-height:20px;
+	font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+font-size:12px;
+color:#444;
+padding:25px;
+}
+
+.clear {
+	clear:both;padding:0;margin:0;
+}
+
+.recipe-comment {
+	width:600px;
+}
+
+.topping {
+	color:#333;
+	background-color:#ccc;
+	padding:1px 5px 1px 5px;
+}
+
+
+.ingredient_style {
+	color:#777;
+}
+
+
+table tr td, input, button, select, table tr th {
+	font-size:12px;
+	line-height:20px;
+	font-family:"Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	}
+
+#loading {
+	display:none;
+	position:absolute;
+	top:0px;
+	left:0;
+	background-color:red;
+	padding:2px;
+	color:white;
+}
+
+
+
+#footer {
+	margin-top:20px;
+}
+.readonly {
+	background-color:#ddd;
+}
+
+
+.clear {
+	clear:both;margin:0;padding:0;
+}
+
+.alert {
+	color:red;
+}
+
+#content {
+	clear:both;
+	width:1000px;
+}
+
+a {
+	color:#444;
+}
+.layout-div {
+	padding:10px;
+	width:300px;
+	float:left;
+	margin:10px;
+	border:solid 1px #999;
+}
+
+
+
+/* jQuery.Rating Plugin CSS - http://www.fyneworks.com/jquery/star-rating/ */
+div.rating-cancel,div.star-rating{float:left;width:17px;height:15px;text-indent:-999em;cursor:pointer;display:block;background:transparent;overflow:hidden}
+div.rating-cancel,div.rating-cancel a{background:url(/static/images/delete.gif) no-repeat 0 -16px}
+div.star-rating,div.star-rating a{background:url(/static/images/star.gif) no-repeat 0 0px}
+div.rating-cancel a,div.star-rating a{display:block;width:16px;height:100%;background-position:0 0px;border:0}
+div.star-rating-on a{background-position:0 -16px!important}
+div.star-rating-hover a{background-position:0 -32px}
+/* Read Only CSS */
+div.star-rating-readonly a{cursor:default !important}
+/* Partial Star CSS */
+div.star-rating{background:transparent!important;overflow:hidden!important}
+/* END jQuery.Rating Plugin CSS */
+
+div.rating-cancel {
+	display:none !important;
+}
+
+.img {display:none}
+
+@media print {
+	.no_print {
+		color:red;
+		display:none;
+		margin:0;
+		padding:0;
+	}
+}

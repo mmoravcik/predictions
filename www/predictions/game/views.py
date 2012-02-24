@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from game.models import Game, GameRound, GamePrediction
+from predictions.game.models import Game, GameRound, GamePrediction
 
 @login_required
 def predict(request, round_id):

@@ -32,7 +32,7 @@
 	</form>
 	
 	<!-- <button onclick='alert("please double check your entries, it is not possible to change them later. \n\nby submitting these predictions you agree to pay £2 to the winner");'>Submit your predictions</button> -->
-	<button onclick='document.predict_form.submit()'>Submit your predictions</button>
+	<button onclick='if (confirm("Please double check your submission. \n\nIt is not possible to change it later. \n\n Only correctly filled in predictions will be submitted now \n\nContinue?")) {document.predict_form.submit()}'>Submit your predictions</button>
 	
 
 {% endblock %}

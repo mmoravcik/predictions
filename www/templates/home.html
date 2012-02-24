@@ -7,6 +7,6 @@
 	
 	Click on the round to submit your predictions:<br />
 	{% for round in game_rounds %}
-		<a href='/predict/{{ round.id }}'>{{ round.name }}</a>
+		<a href='/predict/{{ round.id }}'>{{ round.name }}</a> <br />
 	{% endfor %}
 {% endblock %}
