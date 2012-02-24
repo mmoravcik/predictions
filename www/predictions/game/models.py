@@ -1,6 +1,8 @@
 from django.db import models
 from predictions.models import CommonInfo
 
+from django.conf import settings
+
 class GameRound(CommonInfo):
     name = models.CharField(max_length=128)
     submission_until = models.DateTimeField()
@@ -25,14 +27,45 @@ class Game(CommonInfo):
     
     def get_player_predictions(self, player):
         return GamePrediction.objects.filter(player=player,game=self)
-
+    
+    def is_finished(self):
+        return True if self.result_home_regular_time != None and self.result_away_regular_time != None else False
+    
+    def home_away_draw_result(self):
+        if self.is_finished():
+            if self.result_home_regular_time > self.result_away_regular_time:
+                return settings.HOME_WIN
+            else: 
+                if self.result_home_regular_time < self.result_away_regular_time:
+                    return settings.AWAY_WIN
+            return settings.DRAW
+        
+        return False
     
 class GamePrediction(CommonInfo):
     player = models.ForeignKey('player.Profile')
     game = models.ForeignKey('Game')
     home_score_regular_time = models.SmallIntegerField()
     away_score_regular_time = models.SmallIntegerField()
-    
+        
+    def get_home_away_draw_guess(self):
+        if self.home_score_regular_time > self.away_score_regular_time:
+            return settings.HOME_WIN
+        else: 
+            if self.home_score_regular_time < self.away_score_regular_time:
+                return settings.AWAY_WIN
+        return settings.DRAW    
+        
+    def get_number_of_points(self):
+        total_points = 0
+        if self.game.is_finished():
+            if self.get_home_away_draw_guess() == self.game.home_away_draw_result():
+                total_points += settings.POINTS_CORRECT_RESULT
+                if self.home_score_regular_time == self.game.result_home_regular_time:
+                    total_points += settings.POINTS_CORRECT_ONE_OF_THE_SCORES
+                if self.away_score_regular_time == self.game.result_away_regular_time:
+                    total_points += settings.POINTS_CORRECT_ONE_OF_THE_SCORES
+        return total_points
+        
     def __unicode__(self):
         return "%s - %s - %s vs %s - %s:%s" % (self.game.game_round.name, self.player.user.username, self.game.home_team, self.game.away_team, self.home_score_regular_time, self.away_score_regular_time)
-    
