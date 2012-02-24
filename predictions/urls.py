@@ -14,7 +14,7 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^predict/submit/$', 'predictions.game.views.predict_submit'),
     url(r'^predict/(?P<round_id>\w+)/$', 'predictions.game.views.predict'),
-    
+    url(r'^registration/$', 'predictions.views.register'),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

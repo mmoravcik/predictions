@@ -17,16 +17,22 @@
 			<tr>
 				<td>{{ game.home_team }} vs {{ game.away_team }}</td> 
 				<td>{{ game.date }}</td>
-				<td><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
-				<td><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
+				{% if game.player_predicted %}
+					<td>{{ game.home_score_regular_time_prediction }}</td>
+					<td>{{ game.away_score_regular_time_prediction }}</td>
+				{% else %}
+					<td><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
+					<td><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
+				{% endif %}
+				
 			</tr> 
 		{% endfor %}
 		</table>
 		<input type='hidden' name='round_id' value='{{ round.id }}' />
 	</form>
-	{{ submita }}
-	<button onclick='alert("please double check your entries, it is not possible to change them later. \n\nby submitting these predictions you agree to pay £2 to the winner");'>Submit your predictions</button>
-	<button onclick='document.predict_form.submit()'>Submit your predictions - no alert :)</button>
+	
+	<!-- <button onclick='alert("please double check your entries, it is not possible to change them later. \n\nby submitting these predictions you agree to pay £2 to the winner");'>Submit your predictions</button> -->
+	<button onclick='document.predict_form.submit()'>Submit your predictions</button>
 	
 
 {% endblock %}

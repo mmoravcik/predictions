@@ -7,6 +7,8 @@ import os
 
 location = lambda x: os.path.join(os.path.dirname(os.path.realpath(__file__)), '', x)
 
+AUTH_PROFILE_MODULE = "player.Profile"
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -18,7 +20,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'predictions',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'the_dummy_password',                  # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
@@ -167,4 +169,4 @@ LOGGING = {
     }
 }
 
-AUTH_PROFILE_MODULE = "player.Profile"
+
