@@ -12,8 +12,6 @@ def logout_view(request):
     return HttpResponseRedirect("/")
 
 def register(request):
-    
-    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
