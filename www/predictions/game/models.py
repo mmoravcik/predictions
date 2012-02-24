@@ -1,12 +1,19 @@
 from django.db import models
 from predictions.models import CommonInfo
+import datetime
 
 from django.conf import settings
 
 class GameRound(CommonInfo):
     name = models.CharField(max_length=128)
-    submission_until = models.DateTimeField()
-    
+    expire_at = models.DateTimeField(blank=True,null=True)
+    expirable = models.BooleanField(default=True)
+   
+    def is_expired(self):
+        if self.expirable and self.expire_at < datetime.datetime.now():
+            return True
+        return False
+       
     def __unicode__(self):
         return self.name
     

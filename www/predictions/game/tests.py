@@ -3,11 +3,13 @@ from predictions.game.models import Game, GamePrediction, GameRound
 from predictions.player.models import Profile
 from django.contrib.auth.models import User
 from django.conf import settings
+import datetime
 
 class SimpleTest(TestCase):
     def setUp(self):
-        self.game_round1 = GameRound.objects.create(name='First round', submission_until = '2012-12-31 12:00:00')
-        self.game_round2 = GameRound.objects.create(name='Second round', submission_until = '2011-12-31 12:00:00')
+        self.game_round1 = GameRound.objects.create(name='First round', expire_at = datetime.datetime(2100, 12, 6, 12, 13, 14), expirable=True)
+        self.game_round2 = GameRound.objects.create(name='Second round', expire_at = datetime.datetime(2011, 12, 6, 12, 13, 14), expirable=False)
+        self.game_round3 = GameRound.objects.create(name='Second round', expire_at = datetime.datetime(2011, 12, 6, 12, 13, 14), expirable=True)
         
         self.game1 = Game.objects.create(home_team='Liverpool', 
                                          away_team='Chelsea', 
@@ -81,5 +83,10 @@ class SimpleTest(TestCase):
         self.assertEqual(settings.HOME_WIN, self.game2.home_away_draw_result())
         self.assertEqual(settings.AWAY_WIN, self.game3.home_away_draw_result())
         self.assertEqual(settings.DRAW, self.game4.home_away_draw_result())
+        
+    def test_is_round_expired(self):
+        self.assertFalse(self.game_round1.is_expired())
+        self.assertFalse(self.game_round2.is_expired())
+        self.assertTrue(self.game_round3.is_expired())
     
     
