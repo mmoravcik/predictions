@@ -2,11 +2,33 @@
 {% load i18n %}
 {% block content %}
 
+<script type='text/javascript'>
+function add_time(id, dateobject) {
+
+	$(id).countdown({until: dateobject, format: 'OdHMS', layout: 'will expire in {dn} {dl} {hn} {hl} {mn} {ml} {sn} {sl}', expiryText: 'submissions closed'});
+}
+</script>
+
+
 	Yes! Tangent score predictions!
 	<br /><br />
 	
 	Click on the round to submit your predictions:<br />
+
 	{% for round in game_rounds %}
-		<a href='/predict/{{ round.id }}'>{{ round.name }}</a> <br />
+		<a href='/predict/{{ round.id }}'>{{ round.name }}</a> 
+		{% if round.is_expired %} 
+			submissions closed 
+		{% else %}
+			{% if round.expirable %}
+				<span id='counter_round_{{ round.id }}'></span>
+				<script>$(document).ready(function() {add_time('#counter_round_{{ round.id }}', new Date({{ round.expire_at|date:"Y" }}, {{ round.expire_at|date:"m" }}-1, {{ round.expire_at|date:"d" }}, {{ round.expire_at|date:"H" }}, {{ round.expire_at|date:"i" }}, {{ round.expire_at|date:"s" }}))})</script>
+			{% endif %}
+			
+		{% endif %} 
+		
+		<br />
+		
 	{% endfor %}
 {% endblock %}
+

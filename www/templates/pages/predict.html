@@ -1,38 +1,44 @@
 {% extends "base.html"  %}
 {% load i18n %}
 {% block content %}
-	Predict this round...<b> {{ round.name }}</b>...by submitting these details you agree to pay £2 to the winner
-	<br /><br />
+
+	{% if round.is_expired %}
+		This round submission deadline has expired, you can't submit any more predictions.
 	
-	<form name='predict_form' id='predict_form' action='/predict/submit/' method='post'>
-		{% csrf_token %}
-		<table width='600'>
-			<tr>
-				<th>Game</th>
-				<th>Date</th>
-				<th>Home score</th>
-				<th>Away score</th>
-			</tr>
-		{% for game in games %}
-			<tr>
-				<td>{{ game.home_team }} vs {{ game.away_team }}</td> 
-				<td>{{ game.date }}</td>
-				{% if game.player_predicted %}
-					<td>{{ game.home_score_regular_time_prediction }}</td>
-					<td>{{ game.away_score_regular_time_prediction }}</td>
-				{% else %}
-					<td><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
-					<td><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
-				{% endif %}
-				
-			</tr> 
-		{% endfor %}
-		</table>
-		<input type='hidden' name='round_id' value='{{ round.id }}' />
-	</form>
-	
-	<!-- <button onclick='alert("please double check your entries, it is not possible to change them later. \n\nby submitting these predictions you agree to pay £2 to the winner");'>Submit your predictions</button> -->
-	<button onclick='if (confirm("Please double check your submission. \n\nIt is not possible to change it later. \n\n Only correctly filled in predictions will be submitted now \n\nContinue?")) {document.predict_form.submit()}'>Submit your predictions</button>
-	
+	{% else %}
+
+		Predict this round...<b> {{ round.name }}</b>...by submitting these details you agree to pay £2 to the winner
+		<br /><br />
+		
+		<form name='predict_form' id='predict_form' action='/predict/submit/' method='post'>
+			{% csrf_token %}
+			<table width='600'>
+				<tr>
+					<th>Game</th>
+					<th>Date</th>
+					<th>Home score</th>
+					<th>Away score</th>
+				</tr>
+			{% for game in games %}
+				<tr>
+					<td>{{ game.home_team }} vs {{ game.away_team }}</td> 
+					<td>{{ game.date }}</td>
+					{% if game.player_predicted %}
+						<td>{{ game.home_score_regular_time_prediction }}</td>
+						<td>{{ game.away_score_regular_time_prediction }}</td>
+					{% else %}
+						<td><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
+						<td><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
+					{% endif %}
+					
+				</tr> 
+			{% endfor %}
+			</table>
+			<input type='hidden' name='round_id' value='{{ round.id }}' />
+		</form>
+		
+		<!-- <button onclick='alert("please double check your entries, it is not possible to change them later. \n\nby submitting these predictions you agree to pay £2 to the winner");'>Submit your predictions</button> -->
+		<button onclick='if (confirm("Please double check your submission. \n\nIt is not possible to change it later. \n\n Only correctly filled in predictions will be submitted now \n\nContinue?")) {document.predict_form.submit()}'>Submit your predictions</button>
+	{% endif %}
 
 {% endblock %}
