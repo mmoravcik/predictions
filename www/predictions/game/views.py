@@ -63,6 +63,7 @@ def predict_submit(request):
                                         player=request.user.get_profile(), 
                                         home_score_regular_time=request.POST['home_score_%d' % game.id],
                                         away_score_regular_time=request.POST['away_score_%d' % game.id],
+                                        competitive=request.user.get_profile().free_game,
                                         )
             prediction.save()
 

@@ -59,6 +59,7 @@ class GamePrediction(CommonInfo):
     game = models.ForeignKey('Game')
     home_score_regular_time = models.SmallIntegerField()
     away_score_regular_time = models.SmallIntegerField()
+    competitive = models.BooleanField(default=False)
         
     def get_home_away_draw_guess(self):
         if self.home_score_regular_time > self.away_score_regular_time:
