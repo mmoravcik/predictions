@@ -38,6 +38,11 @@ class Game(CommonInfo):
     def is_finished(self):
         return True if self.result_home_regular_time != None and self.result_away_regular_time != None else False
     
+    def is_expired(self):
+        if self.date < datetime.datetime.now():
+            return True
+        return False
+    
     def home_away_draw_result(self):
         if self.is_finished():
             if self.result_home_regular_time > self.result_away_regular_time:

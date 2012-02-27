@@ -1,0 +1,27 @@
+{% extends "base.html"  %}
+{% load i18n %}
+{% block content %}
+	(!) You can see only the results of the games you have predicted or the games that have submission expired
+	
+	<br /><br />
+	
+	{% for player in player_info %}
+		<div style='border:solid 1px black;padding:10px;'>
+			{{ player.user.first_name }} '{{ player.user.username }}' {{ player.user.last_name }}. Total points: {{ player.total_points }} <br />
+			
+			{% for prediction in player.predictions %}
+				{{ prediction.game.home_team }} - {{ prediction.game.away_team }} 
+				{{ prediction.home_score_regular_time }} : {{ prediction.away_score_regular_time }}
+				{% if prediction.game.is_finished %}
+					({{ prediction.get_number_of_points }} point{{ prediction.get_number_of_points|pluralize:",s" }}, result {{ prediction.game.result_home_regular_time }}:{{ prediction.game.result_away_regular_time }})
+				{% else %}
+					this game has not been played yet
+				{% endif %}	
+				<br />
+			{% endfor %}
+		</div>
+		<br /><br />
+	{% endfor %}
+	
+
+{% endblock %}

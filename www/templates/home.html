@@ -16,7 +16,7 @@ function add_time(id, dateobject) {
 	Click on the round to submit your predictions:<br />
 
 	{% for round in game_rounds %}
-		<a href='/predict/{{ round.id }}'>{{ round.name }}</a> 
+		<a href='/round/predict/{{ round.id }}'>{{ round.name }}</a> <a href='/round/results/{{ round.id }}'> see the results</a> 
 		{% if round.is_expired %} 
 			submissions closed 
 		{% else %}

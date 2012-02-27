@@ -77,6 +77,7 @@ class SimpleTest(TestCase):
         self.assertEqual(settings.POINTS_CORRECT_RESULT, self.prediction4.get_number_of_points())
         self.assertEqual(0, self.prediction5.get_number_of_points())
         self.assertEqual(settings.POINTS_CORRECT_RESULT + settings.POINTS_CORRECT_ONE_OF_THE_SCORES, self.prediction6.get_number_of_points())
+    
         
     def test_game_result_home_away_draw(self):
         self.assertEqual(settings.DRAW, self.game1.home_away_draw_result())
