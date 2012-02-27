@@ -2,12 +2,18 @@
 {% load i18n %}
 {% block content %}
 
+
 	{% if round.is_expired %}
 		This round submission deadline has expired, you can't submit any more predictions.
 	
 	{% else %}
 
-		Predict this round...<b> {{ round.name }}</b>...by submitting these details you agree to pay £2 to the winner
+		Predict this round...<b> {{ round.name }}</b>
+		{% if not request.user.get_profile.free_game %}
+			...by submitting these details you agree to pay £{{ entry_fee }} to the winner. if you want to play for free, contact admin
+		{% else %}
+			...you play for free. contact admin to change this
+		{% endif %}
 		<br /><br />
 		
 		<form name='predict_form' id='predict_form' action='/round/predict/submit/' method='post'>

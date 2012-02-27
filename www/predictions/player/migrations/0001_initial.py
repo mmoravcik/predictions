@@ -13,6 +13,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['auth.User'], unique=True)),
             ('nickname', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
+            ('free_game', self.gf('django.db.models.fields.BooleanField')(default=False)),
         ))
         db.send_create_signal('player', ['Profile'])
 
@@ -62,6 +63,7 @@ class Migration(SchemaMigration):
         },
         'player.profile': {
             'Meta': {'object_name': 'Profile'},
+            'free_game': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'nickname': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['auth.User']", 'unique': 'True'})

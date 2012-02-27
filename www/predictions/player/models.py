@@ -6,6 +6,8 @@ class Profile(models.Model):
     '''
     user = models.OneToOneField('auth.User', unique=True)
     nickname = models.CharField(max_length=32, blank=True, null=True)
+    free_game = models.BooleanField(default=False)
+    
     
     def __unicode__(self):
         return self.user.username

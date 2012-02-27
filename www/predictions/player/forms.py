@@ -7,6 +7,7 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(label = "Email")
     first_name = forms.CharField(label = "First name")
     last_name = forms.CharField(label = "Last name")
+    free_game = forms.BooleanField(label = 'Free game (no gambling)?', required=False)
 
     class Meta:
         model = User
@@ -20,6 +21,6 @@ class CustomUserCreationForm(UserCreationForm):
         
         if commit:
             user.save()
-            new_profile = Profile(user=user, nickname=user.username)
+            new_profile = Profile(user=user, nickname=user.username, free_game=self.cleaned_data['free_game'])
             new_profile.save()
         return user

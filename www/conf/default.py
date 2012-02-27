@@ -123,8 +123,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.csrf',
     'predictions.context_processors.game_rounds',
+    'predictions.context_processors.scoring_info',    
 )
-
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -168,6 +168,7 @@ LOGGING = {
 POINTS_CORRECT_RESULT = 1
 POINTS_CORRECT_ONE_OF_THE_SCORES = 1 
 
+ENTRY_FEE= 2
 HOME_WIN = 1
 AWAY_WIN = 2
 DRAW = 0
