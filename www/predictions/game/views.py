@@ -11,16 +11,21 @@ def predict(request, round_id):
     game_round = GameRound.objects.get(pk=round_id)
     games_to_return = []
     games = Game.objects.filter(game_round=game_round)
+    user_predicted_all_games = True
     for game in games:
         game.player_predicted = game.has_player_predicted(request.user.get_profile())
         if game.player_predicted:
             prediction = game.get_player_predictions(request.user.get_profile())
             game.home_score_regular_time_prediction = prediction[0].home_score_regular_time
             game.away_score_regular_time_prediction = prediction[0].away_score_regular_time
+        else:
+            user_predicted_all_games = False
+        
         games_to_return.append(game)
     
     context = {'round': game_round,
                'games': games_to_return,
+               'user_predicted_all_games': user_predicted_all_games,
                }    
       
     return render_to_response('pages/predict.html', context , context_instance=RequestContext(request))

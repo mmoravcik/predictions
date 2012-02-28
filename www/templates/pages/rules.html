@@ -3,11 +3,35 @@
 {% block content %}
 <h2>Rules</h2>
 	<ul>
-		<li>If two or more players have the same amount of points, the player with more successfull exact scores, then exact goal guesses, will win. Split otherwise</li>
-		<li>You can register as a 'free' player. It means you can submit your predictions, but u can't win any money</li>
+		<li>You can register as a 'free' player. It means you can submit your predictions, but u can't win any money. only a good feeling</li>
 		<li>£{{ entry_fee }} entry fee will be collected by admin so please have change ready. This doesn't apply for 'free' players</li>
 		<li>Predictions are always for Regular time only. No overtime or penalties</li>
+		
+		
+		<li>
+			<strong>Scoring explained</strong><br />
+			{{ point_result }} point for overal game prediction (AWAY, HOME or DRAW), {{ point_goal }} point for every correct goal predicition if result prediction is right
+			<br />
+			Examples :<br >
+			Your prediction: 3:1<br />
+			Result: 2:1<br />
+			your points: {{ point_result }} point for correct overal prediction (HOME win)) + {{ point_goal }} bonus point for exact goal predictioction of away team
+			<br /><br />
+			Your prediction: 3:1<br />
+			Result: 1:1<br />
+			your points: 0 points as the overal prediction is wrong (DRAW instead of HOME win). 0 bonus points as the overal prediction is wrong<br />
+			<br />
+			Your prediction: 3:1<br />
+			Result: 3:1<br />
+			your points: {{ point_result}} points as the overal prediction + {{ point_goal }} point for correct home goals + {{ point_goal }} point for correct away goals
+			<br />
+			
+		</li>
+		<li>If two or more players have the same amount of points per round, the player with more successfull exact scores, then exact goal guesses, will win. Split otherwise</li>
+		<li>By submitting 2 or more predictions as a paying user you agree to contribute to the pot for the winner</li>
+		<li>You can't change the prediction once submitted</li>
+		 
 	</ul>
-	more coming soon
-
+	<h2>Q&amp;F</h2>
+	Any Questions or feedback? <a href='mailto:matus.moravcik@gmail.com'>Send me an email!</a>
 {% endblock %}

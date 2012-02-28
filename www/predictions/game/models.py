@@ -11,7 +11,7 @@ class GameRound(CommonInfo):
     expirable = models.BooleanField(default=True)
         
     def is_expired(self):
-        if self.expirable and self.expire_at < datetime.datetime.now():
+        if self.expirable and self.expire_at !=None and self.expire_at < datetime.datetime.now():
             return True
         return False
        

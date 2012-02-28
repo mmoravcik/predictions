@@ -15,6 +15,7 @@ class SimpleTest(TestCase):
         self.game_round1 = GameRound.objects.create(name='First round', expire_at = datetime.datetime(self.year_ahead, 12, 6, 12, 13, 14), expirable=True)
         self.game_round2 = GameRound.objects.create(name='Second round', expire_at = datetime.datetime(self.year_old, 12, 6, 12, 13, 14), expirable=False)
         self.game_round3 = GameRound.objects.create(name='Third round', expire_at = datetime.datetime(self.year_old, 12, 6, 12, 13, 14), expirable=True)
+        self.game_round4 = GameRound.objects.create(name='Fourth round', expire_at = None, expirable=True)
         
         self.game1 = Game.objects.create(home_team='Liverpool', 
                                          away_team='Chelsea', 
@@ -114,6 +115,7 @@ class SimpleTest(TestCase):
         self.assertFalse(self.game_round1.is_expired())
         self.assertFalse(self.game_round2.is_expired())
         self.assertTrue(self.game_round3.is_expired())
+        self.assertFalse(self.game_round4.is_expired())
         
     def test_competitive_prediction(self):
         self.assertTrue(self.prediction1.competitive)
