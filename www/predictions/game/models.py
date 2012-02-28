@@ -1,5 +1,5 @@
 from django.db import models
-from predictions.models import CommonInfo
+from predictions.models import CommonInfo, is_numeric
 import datetime
 
 from django.conf import settings
@@ -88,8 +88,10 @@ class GamePrediction(CommonInfo):
     
     def is_valid_for_save(self):
         return True if \
-            isinstance(self.home_score_regular_time, (int,long)) and \
-            isinstance(self.away_score_regular_time, (int,long)) and \
+            self.home_score_regular_time != None and \
+            self.away_score_regular_time != None and \
+            is_numeric(self.home_score_regular_time) and \
+            is_numeric(self.away_score_regular_time) and \
             not self.game.game_round.is_expired() and \
             not self.game.is_expired() and \
             self.game.has_player_predicted(self.player) == False \

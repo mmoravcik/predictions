@@ -76,6 +76,8 @@ class SimpleTest(TestCase):
         self.prediction9 = GamePrediction(game=self.game1, player=self.player3, home_score_regular_time=1, away_score_regular_time=2)
         self.prediction10 = GamePrediction(game=self.game4, player=self.player3, home_score_regular_time=1, away_score_regular_time=None)
         self.prediction11 = GamePrediction(game=self.game5, player=self.player3, home_score_regular_time=1, away_score_regular_time=2)
+        self.prediction12 = GamePrediction(game=self.game1, player=self.player3, home_score_regular_time="1", away_score_regular_time=2)
+        self.prediction13 = GamePrediction(game=self.game1, player=self.player3, home_score_regular_time="1", away_score_regular_time="1s")
         
     def test_basic_addition(self):
         """
@@ -130,3 +132,5 @@ class SimpleTest(TestCase):
         self.assertTrue(self.prediction9.is_valid_for_save())
         self.assertFalse(self.prediction10.is_valid_for_save())
         self.assertFalse(self.prediction11.is_valid_for_save())
+        self.assertTrue(self.prediction12.is_valid_for_save())
+        self.assertFalse(self.prediction13.is_valid_for_save())

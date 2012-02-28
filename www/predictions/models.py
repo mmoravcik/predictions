@@ -6,3 +6,12 @@ class CommonInfo(models.Model):
 
     class Meta:
         abstract = True
+
+#where this function should be?
+def is_numeric(str):
+    try:
+        float(str)
+    except ValueError:
+        return False
+    else:
+        return True
