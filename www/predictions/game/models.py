@@ -4,6 +4,7 @@ import datetime
 
 from django.conf import settings
 
+
 class GameRound(CommonInfo):
     name = models.CharField(max_length=128)
     expire_at = models.DateTimeField(blank=True,null=True)
@@ -60,7 +61,7 @@ class GamePrediction(CommonInfo):
     home_score_regular_time = models.SmallIntegerField()
     away_score_regular_time = models.SmallIntegerField()
     competitive = models.BooleanField(default=False)
-        
+       
     def get_home_away_draw_guess(self):
         if self.home_score_regular_time > self.away_score_regular_time:
             return settings.HOME_WIN
@@ -79,6 +80,20 @@ class GamePrediction(CommonInfo):
                 if self.away_score_regular_time == self.game.result_away_regular_time:
                     total_points += settings.POINTS_CORRECT_ONE_OF_THE_SCORES
         return total_points
-        
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.competitive = True if not self.player.free_game else False
+        super(GamePrediction, self).save(*args, **kwargs)
+    
+    def is_valid_for_save(self):
+        return True if \
+            isinstance(self.home_score_regular_time, (int,long)) and \
+            isinstance(self.away_score_regular_time, (int,long)) and \
+            not self.game.game_round.is_expired() and \
+            not self.game.is_expired() and \
+            self.game.has_player_predicted(self.player) == False \
+        else False
+            
     def __unicode__(self):
         return "%s - %s - %s vs %s - %s:%s" % (self.game.game_round.name, self.player.user.username, self.game.home_team, self.game.away_team, self.home_score_regular_time, self.away_score_regular_time)

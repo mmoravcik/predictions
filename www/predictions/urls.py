@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^round/results/(?P<round_id>\w+)$', 'predictions.game.views.round_results'),
     url(r'^round/predict/(?P<round_id>\w+)/$', 'predictions.game.views.predict'),
     url(r'^registration/$', 'predictions.views.register'),
+    url(r'^rules/$', 'predictions.views.rules'),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

@@ -117,3 +117,16 @@ div.rating-cancel {
 		padding:0;
 	}
 }
+
+.text_alert {
+	color:red;
+}
+
+.text_ok {
+	color:green;
+}
+
+.text_highlight {
+	font-size:larger;
+	font-weight:bold;	
+} 

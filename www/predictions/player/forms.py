@@ -7,7 +7,7 @@ class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(label = "Email")
     first_name = forms.CharField(label = "First name")
     last_name = forms.CharField(label = "Last name")
-    free_game = forms.BooleanField(label = 'Free game (no gambling)?', required=False)
+    free_game = forms.BooleanField(label = 'Free game?', required=False)
 
     class Meta:
         model = User

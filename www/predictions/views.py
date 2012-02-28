@@ -7,6 +7,9 @@ from predictions.player.forms import CustomUserCreationForm
 def home(request):
     return render_to_response('home.html', {}, context_instance=RequestContext(request))
 
+def rules(request):
+    return render_to_response('pages/rules.html', {}, context_instance=RequestContext(request))
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect("/")

@@ -43,9 +43,10 @@ def round_results(request, round_id):
                 player_points += prediction.get_number_of_points()
                 player_predictions.append(prediction)
         
-        player.predictions = player_predictions
-        player.total_points =  player_points       
-        player_info.append(player)
+        if player_predictions:
+            player.predictions = player_predictions
+            player.total_points =  player_points       
+            player_info.append(player)
                 
                 
     context = {'round': game_round,
@@ -58,13 +59,12 @@ def predict_submit(request):
     round_id = request.POST['round_id']
     games = Game.objects.filter(game_round=round_id)
     for game in games:
-        if is_prediction_valid(request, game):
-            prediction = GamePrediction(game=game, 
-                                        player=request.user.get_profile(), 
-                                        home_score_regular_time=request.POST['home_score_%d' % game.id],
-                                        away_score_regular_time=request.POST['away_score_%d' % game.id],
-                                        competitive=request.user.get_profile().free_game,
-                                        )
+        prediction = GamePrediction(game=game, 
+                                    player=request.user.get_profile(), 
+                                    home_score_regular_time=request.POST.get('home_score_%d' % game.id, None),
+                                    away_score_regular_time=request.POST.get('away_score_%d' % game.id, None),
+                                    )
+        if prediction.is_valid_for_save():
             prediction.save()
 
     return HttpResponseRedirect('/round/predict/%s' % round_id)
@@ -72,13 +72,3 @@ def predict_submit(request):
 def should_be_game_displayed_in_results(request, player, game):
     return game.has_player_predicted(player) and (game.has_player_predicted(request.user.get_profile()) or game.game_round.is_expired() or game.is_expired())
 
-def is_prediction_valid(request, game):
-    return True if \
-        request.POST.get('home_score_%d' % game.id,None) and \
-        request.POST.get('away_score_%d' % game.id,None) and \
-        request.POST.get('home_score_%d' % game.id,None).isdigit() and \
-        request.POST.get('away_score_%d' % game.id,None).isdigit() and \
-        not game.game_round.is_expired() and \
-        not game.is_expired() and \
-        game.has_player_predicted(request.user.get_profile()) == False \
-    else False

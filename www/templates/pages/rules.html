@@ -1,0 +1,13 @@
+{% extends "base.html"  %}
+{% load i18n %}
+{% block content %}
+<h2>Rules</h2>
+	<ul>
+		<li>If two or more players have the same amount of points, the player with more successfull exact scores, then exact goal guesses, will win. Split otherwise</li>
+		<li>You can register as a 'free' player. It means you can submit your predictions, but u can't win any money</li>
+		<li>£{{ entry_fee }} entry fee will be collected by admin so please have change ready. This doesn't apply for 'free' players</li>
+		<li>Predictions are always for Regular time only. No overtime or penalties</li>
+	</ul>
+	more coming soon
+
+{% endblock %}

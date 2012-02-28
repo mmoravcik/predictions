@@ -8,11 +8,11 @@
 	
 	{% else %}
 
-		Predict this round...<b> {{ round.name }}</b>
+		<h2>Predict {{ round.name }}!</h2>
 		{% if not request.user.get_profile.free_game %}
-			...by submitting these details you agree to pay £{{ entry_fee }} to the winner. if you want to play for free, contact admin
+			...<strong>by submitting these details you agree to pay £{{ entry_fee }} to the winner.</strong> if you want to play for free, please contact admin
 		{% else %}
-			...you play for free. contact admin to change this
+			...you play a FREE game. contact admin to change this
 		{% endif %}
 		<br /><br />
 		
@@ -30,14 +30,14 @@
 					<td>{{ game.home_team }} vs {{ game.away_team }}</td> 
 					<td>{{ game.date|date:"d.m.Y @ H:m (D)" }}</td>
 					{% if game.player_predicted %}
-						<td>{{ game.home_score_regular_time_prediction }}</td>
-						<td>{{ game.away_score_regular_time_prediction }}</td>
+						<td style='text-align:center'>{{ game.home_score_regular_time_prediction }}</td>
+						<td style='text-align:center'>{{ game.away_score_regular_time_prediction }}</td>
 					{% else %}
 						{% if game.is_expired %}
-							<td colspan='2'>Submission expired</td>
+							<td colspan='2' style='text-align:center'>Submission expired</td>
 						{% else %}
-							<td><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
-							<td><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
+							<td style='text-align:center'><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
+							<td style='text-align:center'><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
 						{% endif %}
 						
 					{% endif %}
