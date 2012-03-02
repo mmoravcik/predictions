@@ -5,18 +5,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', 'predictions.views.home', name='home'),
-    # url(r'^predictions/', include('predictions.foo.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),
     (r'^accounts/logout/$', 'predictions.views.logout_view'),
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^round/predict/submit/$', 'predictions.game.views.predict_submit'),
     url(r'^round/results/(?P<round_id>\w+)$', 'predictions.game.views.round_results'),
     url(r'^round/predict/(?P<round_id>\w+)/$', 'predictions.game.views.predict'),
     url(r'^registration/$', 'predictions.views.register'),
     url(r'^rules/$', 'predictions.views.rules'),
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

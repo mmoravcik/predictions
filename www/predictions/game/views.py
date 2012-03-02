@@ -16,8 +16,8 @@ def predict(request, round_id):
         game.player_predicted = game.has_player_predicted(request.user.get_profile())
         if game.player_predicted:
             prediction = game.get_player_predictions(request.user.get_profile())
-            game.home_score_regular_time_prediction = prediction[0].home_score_regular_time
-            game.away_score_regular_time_prediction = prediction[0].away_score_regular_time
+            game.home_score_regular_time_prediction = prediction.home_score_regular_time
+            game.away_score_regular_time_prediction = prediction.away_score_regular_time
         else:
             user_predicted_all_games = False
         
@@ -42,17 +42,15 @@ def round_results(request, round_id):
         player_predictions = []
         
         for game in games:
-            if should_be_game_displayed_in_results(request, player, game):
-                prediction = GamePrediction.objects.get(player=player, game=game)
-                
-                player_points += prediction.get_number_of_points()
-                player_predictions.append(prediction)
+            if game.display_in_results(player, request.user.get_profile()):
+                prediction = GamePrediction.objects.filter(player=player, game=game)
+                player_points += prediction[0].get_number_of_points()
+                player_predictions.append(prediction[0])
         
         if player_predictions:
             player.predictions = player_predictions
             player.total_points =  player_points       
             player_info.append(player)
-                
                 
     context = {'round': game_round,
                'player_info': player_info,
@@ -60,6 +58,7 @@ def round_results(request, round_id):
       
     return render_to_response('pages/round_results.html', context , context_instance=RequestContext(request))
 
+@login_required
 def predict_submit(request):
     round_id = request.POST['round_id']
     games = Game.objects.filter(game_round=round_id)
@@ -73,7 +72,3 @@ def predict_submit(request):
             prediction.save()
 
     return HttpResponseRedirect('/round/predict/%s' % round_id)
-
-def should_be_game_displayed_in_results(request, player, game):
-    return game.has_player_predicted(player) and (game.has_player_predicted(request.user.get_profile()) or game.game_round.is_expired() or game.is_expired())
-

@@ -34,7 +34,7 @@ class Game(CommonInfo):
         return True if prediction else False
     
     def get_player_predictions(self, player):
-        return GamePrediction.objects.filter(player=player,game=self)
+        return GamePrediction.objects.get(player=player,game=self)
     
     def is_finished(self):
         return True if self.result_home_regular_time != None and self.result_away_regular_time != None else False
@@ -43,6 +43,11 @@ class Game(CommonInfo):
         if self.date < datetime.datetime.now():
             return True
         return False
+    
+    def display_in_results(self, player, me):
+        return self.has_player_predicted(player) \
+            and (self.has_player_predicted(player) or self.game_round.is_expired() or self.is_expired())
+
     
     def home_away_draw_result(self):
         if self.is_finished():

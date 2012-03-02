@@ -55,6 +55,13 @@ class SimpleTest(TestCase):
                                          result_away_regular_time=1,
                                          )
         
+        self.game6 = Game.objects.create(home_team='QPR', 
+                                         away_team='Everton', 
+                                         game_round=self.game_round4, 
+                                         date=datetime.datetime(self.year_ahead, 12, 6, 12, 13, 14),
+                                         )
+        
+        
         self.user1 = User.objects.create(username='user 1')
         self.user2 = User.objects.create(username='user 2')
         self.user3 = User.objects.create(username='user 3')
@@ -80,6 +87,8 @@ class SimpleTest(TestCase):
         self.prediction12 = GamePrediction(game=self.game1, player=self.player3, home_score_regular_time="1", away_score_regular_time=2)
         self.prediction13 = GamePrediction(game=self.game1, player=self.player3, home_score_regular_time="1", away_score_regular_time="1s")
         
+        self.prediction14 = GamePrediction.objects.create(game=self.game4, player=self.player2, home_score_regular_time=0, away_score_regular_time=3)
+        
     def test_basic_addition(self):
         """
         Tests that 1 + 1 always equals 2.
@@ -90,6 +99,11 @@ class SimpleTest(TestCase):
         self.assertEqual(settings.DRAW, self.game1.home_away_draw_result())
         self.assertEqual(settings.HOME_WIN, self.game2.home_away_draw_result())
         self.assertEqual(settings.AWAY_WIN, self.game3.home_away_draw_result())
+    
+    def is_game_finished(self):
+        self.assertTrue(self.game1.is_finished())
+        self.assertTrue(self.game2.is_finished())
+        self.assertFalse(self.game6.is_finished())
     
     def test_prediction_away_draw_regular_time(self):
         self.assertEqual(settings.DRAW, self.prediction1.get_home_away_draw_guess())
@@ -125,7 +139,10 @@ class SimpleTest(TestCase):
         self.assertFalse(self.game1.is_expired())
         self.assertTrue(self.game5.is_expired())
     
-
+    def test_has_player_predicted(self):
+        self.assertTrue(self.game1.has_player_predicted(self.player1))
+        self.assertFalse(self.game1.has_player_predicted(self.player3))
+        
     def test_is_prediction_valid_for_save(self):
         self.assertFalse(self.prediction7.is_valid_for_save())
         self.assertFalse(self.prediction8.is_valid_for_save())
@@ -136,3 +153,10 @@ class SimpleTest(TestCase):
         self.assertFalse(self.prediction11.is_valid_for_save())
         self.assertTrue(self.prediction12.is_valid_for_save())
         self.assertFalse(self.prediction13.is_valid_for_save())
+        
+    def test_display_game_in_results(self):
+        self.assertTrue(self.game1.display_in_results(self.player1, self.player2))
+        self.assertFalse(self.game1.display_in_results(self.player3, self.player1))
+        self.assertFalse(self.game4.display_in_results(self.player3, self.player1))
+        self.assertTrue(self.game4.display_in_results(self.player2, self.player1))
+        
