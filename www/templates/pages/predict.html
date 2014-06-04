@@ -3,56 +3,56 @@
 {% block content %}
 
 
-	{% if round.is_expired %}
-		This round submission deadline has expired, you can't submit any more predictions.
-	
-	{% else %}
+    {% if round.is_expired %}
+        This round submission deadline has expired, you can't submit any more predictions.
 
-		<h2>Predict {{ round.name }}!</h2>
-		{% if not request.user.get_profile.free_game %}
-			...<strong>by submitting these details you agree to pay £{{ entry_fee }} to the winner.</strong> if you want to play for free, please contact admin
-		{% else %}
-			...you play a FREE game. contact admin to change this
-		{% endif %}
-		<br /><br />
-		
-		<form name='predict_form' id='predict_form' action='/round/predict/submit/' method='post'>
-			{% csrf_token %}
-			<table width='600'>
-				<tr>
-					<th>Game</th>
-					<th>Date</th>
-					<th>Home score</th>
-					<th>Away score</th>
-				</tr>
-			{% for game in games %}
-				<tr>
-					<td>{{ game.home_team }} vs {{ game.away_team }}</td> 
-					<td>{{ game.date|date:"d.m.Y @ H:m (D)" }}</td>
-					{% if game.player_predicted %}
-						<td style='text-align:center'>{{ game.home_score_regular_time_prediction }}</td>
-						<td style='text-align:center'>{{ game.away_score_regular_time_prediction }}</td>
-					{% else %}
-						{% if game.is_expired %}
-							<td colspan='2' style='text-align:center'>Submission expired</td>
-						{% else %}
-							<td style='text-align:center'><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
-							<td style='text-align:center'><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
-						{% endif %}
-						
-					{% endif %}
-					
-				</tr> 
-			{% endfor %}
-			</table>
-			<input type='hidden' name='round_id' value='{{ round.id }}' />
-		</form>
-		{% if user_predicted_all_games %}
-			you have predicted all games for this round
-		{% else %}
-			<button onclick='if (confirm("Please double check your submission. \n\nIt is not possible to change it later. \n\n Only correctly filled in predictions will be submitted now \n\nContinue?")) {document.predict_form.submit()}'>Submit your predictions</button>
-		{% endif %}		
-		
-	{% endif %}
+    {% else %}
+
+        <h2>Predict {{ round.name }}!</h2>
+        {% if not request.user.get_profile.free_game %}
+            ...<strong>by submitting these details you agree to pay £{{ entry_fee }} to the winner.</strong> if you want to play for free, please contact admin
+        {% else %}
+            ...you play a FREE game. contact admin to change this
+        {% endif %}
+        <br /><br />
+
+        <form name='predict_form' id='predict_form' action='/round/predict/submit/' method='post'>
+            {% csrf_token %}
+            <table width='600'>
+                <tr>
+                    <th>Game</th>
+                    <th>Date</th>
+                    <th>Home score</th>
+                    <th>Away score</th>
+                </tr>
+            {% for game in games %}
+                <tr>
+                    <td>{{ game.home_team }} vs {{ game.away_team }}</td>
+                    <td>{{ game.date|date:"d.m.Y @ H:m (D)" }}</td>
+                    {% if game.player_predicted %}
+                        <td style='text-align:center'>{{ game.home_score_regular_time_prediction }}</td>
+                        <td style='text-align:center'>{{ game.away_score_regular_time_prediction }}</td>
+                    {% else %}
+                        {% if game.is_expired %}
+                            <td colspan='2' style='text-align:center'>Submission expired</td>
+                        {% else %}
+                            <td style='text-align:center'><input style='width:30px' value='' type='text' name='home_score_{{ game.id }}' /></td>
+                            <td style='text-align:center'><input style='width:30px' value='' type='text' name='away_score_{{ game.id }}' /></td>
+                        {% endif %}
+
+                    {% endif %}
+
+                </tr>
+            {% endfor %}
+            </table>
+            <input type='hidden' name='round_id' value='{{ round.id }}' />
+        </form>
+        {% if user_predicted_all_games %}
+            you have predicted all games for this round
+        {% else %}
+            <button onclick='if (confirm("Please double check your submission. \n\nIt is not possible to change it later. \n\n Only correctly filled in predictions will be submitted now \n\nContinue?")) {document.predict_form.submit()}'>Submit your predictions</button>
+        {% endif %}
+
+    {% endif %}
 
 {% endblock %}

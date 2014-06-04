@@ -5,44 +5,44 @@
 <script type='text/javascript'>
 function add_time(id, dateobject) {
 
-	$(id).countdown({until: dateobject, format: 'OdHMS', layout: 'expires in {dn} {dl} {hn} {hl} {mn} {ml} {sn} {sl}', expiryText: 'submissions closed'});
+    $(id).countdown({until: dateobject, format: 'OdHMS', layout: 'expires in {dn} {dl} {hn} {hl} {mn} {ml} {sn} {sl}', expiryText: 'submissions closed'});
 }
 </script>
 
-	<h2>Yes! Tangent score predictions!</h2>
+    <h2>Yes! Tangent score predictions!</h2>
 
-	{% if user.is_anonymous %}
-		You need to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login</a> or <a href='/registration/'>register</a> to be able to use the system
-	{% endif %}
-	<br />
-	Please click predict to submit your predictions
-	<br /><br />
-	<table cellpadding='4'>
-		<tr>
-			<th style='width:200px'>Round name</th>
-			<th style='width:200px'>Actions</th>
-			<th>Status</th>
-		</tr>
-		{% for round in game_rounds %}
-			<tr>
-				<td>{{ round.name }}</td>
-				<td><a href='/round/predict/{{ round.id }}'>&raquo; predict</a> &nbsp; &nbsp; &raquo;<a href='/round/results/{{ round.id }}'>see the results</a></td> 
-				<td style='text-align:center'>
-				{% if round.is_expired %} 
-					submissions closed 
-				{% else %}
-					{% if round.expirable %}
-						<span id='counter_round_{{ round.id }}'></span>
-						<script>$(document).ready(function() {add_time('#counter_round_{{ round.id }}', new Date({{ round.expire_at|date:"Y" }}, {{ round.expire_at|date:"m" }}-1, {{ round.expire_at|date:"d" }}, {{ round.expire_at|date:"H" }}, {{ round.expire_at|date:"i" }}, {{ round.expire_at|date:"s" }}))})</script>
-					{% else %}
-						open
-					{% endif %}
-					
-				{% endif %} 
-				</td>
-			
-			</tr>
-		{% endfor %}
-	</table>
+    {% if user.is_anonymous %}
+        You need to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login</a> or <a href='/registration/'>register</a> to be able to use the system
+    {% endif %}
+    <br />
+    Please click predict to submit your predictions
+    <br /><br />
+    <table cellpadding='4'>
+        <tr>
+            <th style='width:200px'>Round name</th>
+            <th style='width:200px'>Actions</th>
+            <th>Status</th>
+        </tr>
+        {% for round in game_rounds %}
+            <tr>
+                <td>{{ round.name }}</td>
+                <td><a href='/round/predict/{{ round.id }}'>&raquo; predict</a> &nbsp; &nbsp; &raquo;<a href='/round/results/{{ round.id }}'>see the results</a></td>
+                <td style='text-align:center'>
+                {% if round.is_expired %}
+                    submissions closed
+                {% else %}
+                    {% if round.expirable %}
+                        <span id='counter_round_{{ round.id }}'></span>
+                        <script>$(document).ready(function() {add_time('#counter_round_{{ round.id }}', new Date({{ round.expire_at|date:"Y" }}, {{ round.expire_at|date:"m" }}-1, {{ round.expire_at|date:"d" }}, {{ round.expire_at|date:"H" }}, {{ round.expire_at|date:"i" }}, {{ round.expire_at|date:"s" }}))})</script>
+                    {% else %}
+                        open
+                    {% endif %}
+
+                {% endif %}
+                </td>
+
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
 

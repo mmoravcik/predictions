@@ -1,48 +1,48 @@
 {% extends "base.html"  %}
 {% load i18n %}
 {% block content %}
-	(!) You can only see the games you have predicted or games that are expired for submission
-	
-	<br /><br />
-	
-	{% for player in player_info %}
-		<div style='border:solid 1px black;padding:10px;'>
-			<strong>{{ player.user.first_name }} '{{ player.user.username }}' {{ player.user.last_name }}</strong>. Total points: <span class='text_highlight'>{{ player.total_points }}</span> <br />
-			<table cellpadding='4'>
-				<tr>
-					<th style='width:200px;'>Game</th>
-					<th>Prediction</th>
-					<th>Result</th>
-					<th>Points</th>
-					<th>Competitive</th>
-					
-				</tr>
-				{% for prediction in player.predictions %}
-					<tr>
-						<td>{{ prediction.game.home_team }} - {{ prediction.game.away_team }}</td>
-						<td style='text-align:center'>{{ prediction.home_score_regular_time }}:{{ prediction.away_score_regular_time }}</td> 
-							
-						{% if prediction.game.is_finished %}
-							<td style='text-align:center'>{{ prediction.game.result_home_regular_time }}:{{ prediction.game.result_away_regular_time }}</td>
-							<td style='text-align:center'>{{ prediction.get_number_of_points }}</td> 
-						{% else %}
-							<td style='text-align:center'>tbc</td><td style='text-align:center'>0</td>
-						{% endif %}
-						</td>
-						<td style='text-align:center'>	
-						{% if not prediction.competitive %}
-							<span class='text_alert'>x</span>
-						{% else %}
-							<span class='text_ok'>&radic;</span>
-						{% endif %}
-						</td>
-					</tr>
-				
-				{% endfor %}
-			</table>	
-		</div>
-		<br /><br />
-	{% endfor %}
-	
+    (!) You can only see the games you have predicted or games that are expired for submission
+
+    <br /><br />
+
+    {% for player in player_info %}
+        <div style='border:solid 1px black;padding:10px;'>
+            <strong>{{ player.user.first_name }} '{{ player.user.username }}' {{ player.user.last_name }}</strong>. Total points: <span class='text_highlight'>{{ player.total_points }}</span> <br />
+            <table cellpadding='4'>
+                <tr>
+                    <th style='width:200px;'>Game</th>
+                    <th>Prediction</th>
+                    <th>Result</th>
+                    <th>Points</th>
+                    <th>Competitive</th>
+
+                </tr>
+                {% for prediction in player.predictions %}
+                    <tr>
+                        <td>{{ prediction.game.home_team }} - {{ prediction.game.away_team }}</td>
+                        <td style='text-align:center'>{{ prediction.home_score_regular_time }}:{{ prediction.away_score_regular_time }}</td>
+
+                        {% if prediction.game.is_finished %}
+                            <td style='text-align:center'>{{ prediction.game.result_home_regular_time }}:{{ prediction.game.result_away_regular_time }}</td>
+                            <td style='text-align:center'>{{ prediction.get_number_of_points }}</td>
+                        {% else %}
+                            <td style='text-align:center'>tbc</td><td style='text-align:center'>0</td>
+                        {% endif %}
+                        </td>
+                        <td style='text-align:center'>
+                        {% if not prediction.competitive %}
+                            <span class='text_alert'>x</span>
+                        {% else %}
+                            <span class='text_ok'>&radic;</span>
+                        {% endif %}
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </table>
+        </div>
+        <br /><br />
+    {% endfor %}
+
 
 {% endblock %}

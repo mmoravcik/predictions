@@ -1,87 +1,87 @@
 <html>
 <head>
-	<title>{% block title %}{% endblock %}</title>
-	<script src="{{ STATIC_URL }}js/jquery1.5.2.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}js/jquery-stars.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}js/growl.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}js/jquery.countdown.min.js" type="text/javascript"></script>
-	
-	
-	<link type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />	
-	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
-	
-	<link href="{{ STATIC_URL }}css/style.css?a=3" rel="stylesheet" type="text/css" />
-	<script src="{{ STATIC_URL }}js/jquery.jqprint-0.3.js" type="text/javascript"></script>
-	<script type="text/javascript" >
+    <title>{% block title %}{% endblock %}</title>
+    <script src="{{ STATIC_URL }}js/jquery1.5.2.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/jquery-stars.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/growl.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}js/jquery.countdown.min.js" type="text/javascript"></script>
 
-	$.ajaxSetup ({
-	    // Disable caching of AJAX responses
-	    cache: false
-	});
-	
-	$.ajaxSetup({ 
-	    beforeSend: function(xhr, settings) {
-	        function getCookie(name) {
-	            var cookieValue = null;
-	            if (document.cookie && document.cookie != '') {
-	                var cookies = document.cookie.split(';');
-	                for (var i = 0; i < cookies.length; i++) {
-	                    var cookie = jQuery.trim(cookies[i]);
-	                    // Does this cookie string begin with the name we want?
-	                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-	                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-	                    break;
-	                }
-	            }
-	        }
-	        return cookieValue;
-	        }
-	        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-	            // Only send the token to relative URLs i.e. locally.
-	            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-	        }
-	    },
-	    cache: false 
-	});
+
+    <link type="text/css" href="{{ STATIC_URL }}css/smoothness/jquery-ui-1.8.16.custom.css" rel="Stylesheet" />
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-1.8.16.custom.min.js"></script>
+
+    <link href="{{ STATIC_URL }}css/style.css?a=3" rel="stylesheet" type="text/css" />
+    <script src="{{ STATIC_URL }}js/jquery.jqprint-0.3.js" type="text/javascript"></script>
+    <script type="text/javascript" >
+
+    $.ajaxSetup ({
+        // Disable caching of AJAX responses
+        cache: false
+    });
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+            }
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                // Only send the token to relative URLs i.e. locally.
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        },
+        cache: false
+    });
 
 </script>
-	
+
 </head>
 
 <body>
-	<div style='display:none' id='loading'>loading....</div>
-	<h1><a href='/'>Predictions!</a></h1>
+    <div style='display:none' id='loading'>loading....</div>
+    <h1><a href='/'>Predictions!</a></h1>
 
-	<div style='text-align:right;width:800px;'>
-		{% if user.is_anonymous %}
-			Hi guest, why not to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login here</a><br />
-			<a href='/registration/'>Register here</a>
-	    {% else %}
-	    	Hi {{ user.username }}, <a href='/accounts/logout/'>logout</a> here if you want to 
-		{% endif %}	
-		<br />
-		<a href='/'>Home</a> | <a href='/rules/'>Rules</a> | <a href='mailto:matus.moravcik@gmail.com'>Contact</a>
-	</div>
-	
-	<br><br>
-	
-	
-	<div class='clear'></div>
-	
-	
-			{% block content %}{% endblock %}
-		
-	<br><br><div id='footer'>&copy; 2012</div>
-	
+    <div style='text-align:right;width:800px;'>
+        {% if user.is_anonymous %}
+            Hi guest, why not to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login here</a><br />
+            <a href='/registration/'>Register here</a>
+        {% else %}
+            Hi {{ user.username }}, <a href='/accounts/logout/'>logout</a> here if you want to
+        {% endif %}
+        <br />
+        <a href='/'>Home</a> | <a href='/rules/'>Rules</a> | <a href='mailto:matus.moravcik@gmail.com'>Contact</a>
+    </div>
+
+    <br><br>
+
+
+    <div class='clear'></div>
+
+
+            {% block content %}{% endblock %}
+
+    <br><br><div id='footer'>&copy; 2012</div>
+
 </body>
 
 
 <script>
 
 $( document ).ajaxStart( function() {
-	$( '#loading' ).show();
+    $( '#loading' ).show();
 }).ajaxStop( function() {
-	$( '#loading' ).hide();
+    $( '#loading' ).hide();
 });
 
 //alert('loaded');
