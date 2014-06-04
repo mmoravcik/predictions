@@ -1,0 +1,59 @@
+$client = "{{ client }}"
+$project = "{{ project_code }}"
+$build = "{{ build }}"
+
+Exec {
+    path => ["/bin", "/sbin", "/usr/bin", "/usr/sbin"],
+}
+
+$web_dirs = [ "/var/www/${client}/", "/var/www/${client}/${project}/",
+              "/var/www/${client}/${project}/builds",
+               "/var/www/${client}/${project}/virtualenvs",
+               "/var/www/${client}/${project}/virtualenvs/${project}-${build}",
+               "/var/www/${client}/${project}/media/",
+          ]
+
+file { $web_dirs:
+    ensure => "directory",
+    owner  => "root",
+    group  => "root",
+    mode   => 775,
+}
+
+
+file { "/var/www/${client}/${project}/media/${build}/":
+  ensure => directory,
+  group => "www-data",
+  owner => "root",
+  recurse => true,
+  mode   => 775,
+}
+
+
+exec { "make_virtualenv":
+  command => "sudo virtualenv --no-site-packages /var/www/${client}/${project}/virtualenvs/${project}-${build}",
+  creates => "/var/www/${client}/${project}/virtualenvs/${project}-${build}/bin"
+}
+
+define line($file, $line, $ensure = 'present') {
+    case $ensure {
+        default : { err ( "unknown ensure value ${ensure}" ) }
+        present: {
+            exec { "/bin/echo '${line}' >> '${file}'":
+                unless => "/bin/grep -qFx '${line}' '${file}'"
+            }
+        }
+        absent: {
+            exec { "/bin/grep -vFx '${line}' '${file}' | /usr/bin/tee '${file}' > /dev/null 2>&1":
+              onlyif => "/bin/grep -qFx '${line}' '${file}'"
+            }
+        }
+    }
+}
+
+line { django_conf:
+    file => "/var/www/${client}/${project}/virtualenvs/${project}-${build}/bin/activate",
+    line => "export DJANGO_CONF=conf.{{ build }}",
+    require => Exec["make_virtualenv"],
+}
+

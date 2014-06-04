@@ -1,292 +1,274 @@
-# Template fabric deployment file for deploying Git projects
-#
-# Installation
-# ------------
-#
-# To use this file, copy it into the root of your project and set up a configuration
-# file fabconfig.py. It should define functions for each environment that will update
-# the 'env' global. Here's a sample implementation:
-#
-# from fabric.api import env
-#
-# env.builds_dir = '/var/www/carlsberg/cdk/builds'
-# env.web_dir = 'www'
-# env.test_apps = 'shop'
-#
-# def dev():
-# "Sets the dev environment"
-# env.build = 'dev'
-# env.hosts = ['192.168.125.95']
-# env.virtualenv = '/var/www/carlsberg/cdk/virtualenvs/dev'
-# env.code_dir = '/var/www/carlsberg/cdk/builds/dev'
-# env.apache_conf = 'deploy/apache/carlsberg-cdk-dev.conf'
-# env.wsgi = 'deploy/apache/carlsberg-cdk-dev.wsgi'
-#
-# def stage():
-# "Sets the stage environment"
-# env.build = 'stage'
-# env.hosts = ['192.168.125.95']
-# env.virtualenv = '/var/www/carlsberg/cdk/virtualenvs/stage'
-# env.code_dir = '/var/www/carlsberg/cdk/builds/stage'
-# env.apache_conf = 'config/carlsberg-cdk-stage.conf'
-# env.wsgi = 'config/carlsberg-cdk-stage.wsgi'
-#
-# def production():
-# "Sets the production environment"
-# env.build = 'production'
-# env.hosts = ['192.168.125.96']
-# env.virtualenv = '/var/www/carlsberg/cdk/virtualenvs/production'
-# env.code_dir = '/var/www/carlsberg/cdk/builds/production'
-# env.apache_conf = 'config/carlsberg-cdk-production.conf'
-# env.wsgi = 'config/carlsberg-cdk-production.wsgi'
-#
-# Usage
-# -----
-#
-# This file is designed so projects can be deployed from a developer's laptop, you
-# don't need to SSH into the remote server. The only requirements are that you
-# have a SSH user with sudo privileges.
-#
-# To deploy to a particular environment, use:
-#
-# $ fab dev deploy # dev deployment
-# $ fab production deploy # production deployment
-#
-# Each of these commands sets up the appropriate environment, then runs the generic
-# deploy method that uses these settings.
-#
-# Deployment strategy
-# -------------------
-#
-# The 'deploy' target does the following:
-#
-# 1. Updates the specified branch to the latest commit from the remote Git repo
-# 2. Creates a tarball in /tmp
-# 3. Uploads the tarball to the remote server
-# 4. Unpacks the tarball into the correct places on the remote server. This includes:
-# - Creating a new build folder and symlinking to it
-# - Deleting any unnecessary files
-# - Copying the apache config into place
-# - Copying cronjobs into place
-# - Touching the WSGI file to reload the new python code
-# - Cleaning up
-
 import datetime
 import os
 
-from fabric.api import local, run, sudo, env
-from fabric.colors import green, red
-from fabric.context_managers import cd, lcd
+from fabric.decorators import runs_once
 from fabric.operations import put, prompt
+from fabric.colors import green, red
+from fabric.api import local, cd, sudo
 
-from fabconfig import *
+# Import project settings 
+try:
+    from fabconfig import *
+except ImportError:
+    import sys
+    print "You need to define a fabconfig.py file with your project settings"
+    sys.exit()
 
+def _get_commit_id():
+    """
+    Return the commit ID for the branch about to be deployed
+    """
+    return local('git rev-parse HEAD', capture=True)[:20]
+
+def notify(msg):
+    bar = '+' + '-' * (len(msg) + 2) + '+'
+    print green('')
+    print green(bar)
+    print green("| %s |" % msg)
+    print green(bar)
+    print green('')
 
 # Deployment tasks
 
-def deploy(branch='master', repo='origin'):
+@runs_once
+def update_codebase(branch, repo):
     """
-Deploy to a environment
-
-This is the main task for deployment.
-"""
-
-    # Ensure we have the latest code
-    update_codebase(branch, repo)
-    
-    
-    commit_id = _get_commit_id()
-
-    # Versioning: we always deploy from a tag so we either select one
-    # or create one.
-    print green("Fetching latest tags")
-    local('git fetch --tags')
-    local('git tag | tail -5')
-    env.version = prompt('Enter tag to deploy from [if new, then the tag will be created]')
-    assert len(env.version) > 0
-
-    # Create tag if it is new
-    output = local('git tag -l %s' % env.version, capture=True)
-    output = output.strip()
-    if len(output) == 0:
-        print green("Tagging version '%s'" % env.version)
-        local('git tag %s' % env.version)
-        local('git push --tags')
-    else:
-        print green("Deploying from tag %s" % env.version)
-
-    # Create file of code to deploy
-    archive_file = '/tmp/build-%s.tar.gz' % env.version
-    prepare_build(archive_file)
-
-    # Determine user to use for deployment
-    env.user = prompt('Username for remote host? [default is current user] ') or os.environ['USER']
-
-    # Upload and deploy
-    upload(archive_file)
-    
-    unpack(archive_file, commit_id, branch)
-
-    # Dependencies
-    update_virtualenv()
-
-    # Database, static, i18n
-    migrate_schema()
-    #collect_static_files()
-    #collect_messages()
-
-    # Server configuration
-    _deploy_apache_config()
-    _deploy_nginx_config()
-    #deploy_cronjobs()
-    #_deploy_cronjobs()
-    nginx_reload()
-    apache_reload()
-    restart()
-    delete_old_builds()
-    #whoosh_setup()
-
-def _get_commit_id():
-    "Returns the commit ID for the branch about to be deployed"
-    return local('git rev-parse HEAD', capture=True)[:20]
-
-def update_codebase(branch='master', repo='origin'):
+    Update codebase from the Git repo
     """
-Pull latest code
-"""
-    print(green('Updating codebase from remote "%s", branch "%s"' % (repo, branch)))
-    local('git checkout %s' % (branch))
+    notify('Updating codebase from remote "%s", branch "%s"' % (repo, branch))
     local('git pull %s %s' % (repo, branch))
+    notify('Push any local changes to remote %s' % branch)
+    local('git push %s %s' % (repo, branch))
 
-def prepare_build(archive_file, reference='master'):
+
+@runs_once
+def prepare_infrastructure():
+    notify("Preparing infrastructure")
+    with cd(env.code_dir):
+        _apply_deploy_template(env.code_dir + '/deploy/puppet/puppet.ppc')
+        sudo('sudo puppet deploy/puppet/puppet.ppc' % env)
+
+
+@runs_once
+def set_reference_to_deploy_from(branch):
     """
-Creates a gzipped tarball with the code to be deployed.
-"""
-    local('git archive --format tar %s %s | gzip > %s' % (reference, env.web_dir, archive_file))
+    Determine the refspec (tag or commit ID) to build from
 
-def upload(local_path, remote_path=None):
+    The role of this task is simply to set the env.version variable
+    which is used later on.
     """
-Upload a file to the remote server
-"""
-    if not remote_path:
-        remote_path = local_path
-    print green("Uploading %s to %s" % (local_path, remote_path))
-    put(local_path, remote_path)
+    notify("Determine the git reference to deploy from")
+    # Versioning - we either deploy from a tag or we create a new one
+    local('git fetch --tags')
 
-def unpack(archive_path, commit_id, branch):
+    if env.build == 'test':
+        # Allow a new tag to be set, or generate on automatically
+        print ''
+        create_tag = prompt(red('Tag this release? [y/N] '))
+        if create_tag.lower() == 'y':
+            notify("Showing latest tags for reference")
+            local('git tag | sort -V | tail -5')
+            env.version = prompt(red('Tag name [in format x.x.x]? '))
+            notify("Tagging version %s" % env.version)
+            local('git tag %s -m "Tagging version %s in fabfile"' % (env.version, env.version))
+            local('git push --tags')
+        else:
+            deploy_version = prompt(red('Build from a specific commit (useful for debugging)? [y/N] '))
+            print ''
+            if deploy_version.lower() == 'y':
+                env.version = prompt(red('Choose commit to build from: '))
+            else:
+                env.version = local('git describe %s' % branch, capture=True).strip()
+    else:
+        # An existing tag must be specified to deploy to QE or PE
+        local('git tag | sort -V | tail -5')
+        env.version = prompt(red('Choose tag to build from: '))
+        # Check this is valid
+        notify("Checking chosen tag exists")
+        local('git tag | grep "%s"' % env.version)
+
+    if env.build == 'prod' and False:
+        # If a production build, then we ensure that the master branch
+        # gets updated to include all work up to this tag
+        notify("Merging tag into master")
+        local('git checkout master')
+        local('git merge %s' % env.version)
+        local('git push origin master')
+        local('git checkout develop')
+
+def set_ssh_user():
+    env.user = prompt(red('Username for remote host? [default is current user] '))
+    if not env.user:
+        env.user = os.environ['USER']
+
+def deploy_codebase(archive_file, commit_id):
     """
-Unpacks the tarball into the correct place
-"""
+    Push a tarball of the codebase up
+    """
+    upload(archive_file)
+    unpack(archive_file)
 
-    # We use a build folder that includes the date and time.
-    print green("Creating build folder")
+def prepare(repo='origin'):
+    notify('BUILDING TO %s' % env.build.upper())
+
+    # Ensure we have latest code locally
+    branch = local('git branch | grep "^*" | cut -d" " -f2', capture=True)
+    update_codebase(branch, repo)
+    set_reference_to_deploy_from(branch)
+
+    # Create a build file ready to be pushed to the servers
+    notify("Building from refspec %s" % env.version)
+    env.build_file = '/tmp/build-%s.tar.gz' % str(env.version)
+    local('git archive --format tar %s %s | gzip > %s' % (env.version, env.web_dir, env.build_file))
+
+    # Set timestamp now so it is the same on all servers after deployment
     now = datetime.datetime.now()
     env.build_dir = '%s-%s' % (env.build, now.strftime('%Y-%m-%d-%H-%M'))
+    env.code_dir = '%s/%s' % (env.builds_dir, env.build_dir)
+
+def deploy():
+    """
+    Deploys the codebase
+    """
+    # Set SSH user and upload codebase to all servers, both
+    # app and proc.
+    set_ssh_user()
+    deploy_codebase(env.build_file, env.version)
+    #prepare_infrastructure()
+    update_virtualenv()
+    migrate()
+    collect_static_files()
+    deploy_apache_config()
+    deploy_nginx_config()
+    #deploy_cronjobs()
+
+    switch_symlink()
+    reload_python_code()
+    reload_apache()
+    reload_nginx()
+    delete_old_builds()
+
+def switch_symlink():
+    notify("Switching symlinks")
     with cd(env.builds_dir):
-        # Unpack
-        sudo('tar xzf %s' % archive_path)
-        
-        # Remove some unnecessary files
-        #sudo('rm %(web_dir)s/settings_test.py' % env)
-
-        # Create new build folder (which isn't symlinked in yet)
-        sudo('if [ -d "%(build_dir)s" ]; then rm -rf "%(build_dir)s"; fi' % env)
-        sudo('mv %(web_dir)s %(build_dir)s' % env)
-
-        # Append release info to settings.py. This requires having a setting
-        # set to "UNVERSIONED" in settings.py, which gets substituted here.
-        sudo("sed -i 's/UNVERSIONED/%(version)s/' %(build_dir)s/settings.py" % env)
-
-        # Create new symlink
+        # Create new symlink for build folder
         sudo('if [ -h %(build)s ]; then unlink %(build)s; fi' % env)
         sudo('ln -s %(build_dir)s %(build)s' % env)
 
-        # Add file indicating Git commit
-        sudo('echo -e "branch: %s\ntag: %s\nuser: %s" > %s/build-info' % (branch, env.version, env.user, env.build))
-
-        # Remove uploaded file
-        sudo('rm %s' % archive_path)
-    
-def update_virtualenv():
-    """
-Updated dependencies
-"""
-    with cd(env.code_dir):
-        sudo('source %s/bin/activate && pip install -q -r deploy/requirements.txt' % env.virtualenv)
-
-def migrate_schema():
-    """
-Apply any migrations
-"""
-    with cd(env.code_dir):
-        sudo('source %s/bin/activate && ./manage.py syncdb && ./manage.py migrate' % env.virtualenv)
-
-def collect_static_files():
-    """
-Collect all static files into the public folder so they can be served
-by nginx
-"""
-    with cd(env.code_dir):
-        sudo('source %s/bin/activate && ./manage.py collectstatic --noinput > /dev/null' % env.virtualenv)
-
-def _deploy_apache_config():
-    "Deploys the apache config"
-    print green('Moving apache config into place')
+def reload_python_code():
+    notify('Touching WSGI file to reload python code')
     with cd(env.builds_dir):
-        sudo('mv %(build)s/%(apache_conf)s /etc/apache2/sites-available/' % env)
-
-def _deploy_nginx_config():
-    print green('Moving nginx config into place')
-    with cd(env.builds_dir):
-        sudo('mv %(build)s/%(nginx_conf)s /etc/nginx/sites-available/' % env)
-    
-
-
-def _deploy_cronjobs():
-    "Deploys the cron jobs"
-    print green('Deploying cronjobs')
-    with cd(env.builds_dir):
-        sudo('if [ $(ls %(build)s/cron.d) ]; then mv %(build)s/cron.d/* /etc/cron.d/; fi' % env)
-
-def restart():
-    "Reloads python code"
-    print green('Touching WSGI file to reload python code')
-    with cd(env.builds_dir):
+        _apply_deploy_template('%(build)s/%(wsgi)s' % env)
         sudo('touch %(build)s/%(wsgi)s' % env)
 
-def delete_old_builds():
-    print green('Deleting old builds')
-    with cd(env.builds_dir):
-        sudo('find . -maxdepth 1 -type d -name "%(build)s*" | sort -r | sed "1,3d" | xargs rm -rf' % env)
+def reload_apache():
+    notify('Reloading Apache2 configuration')
+    sudo('/etc/init.d/apache2 reload')
 
-def apache_reload():
-    "Reloads apache config"
-    sudo('/etc/init.d/apache2 force-reload')
-
-def apache_restart():
-    "Restarts apache"
-    sudo('/etc/init.d/apache2 restart')
-
-def nginx_reload():
-    "Reloads nginx config"
+def reload_nginx():
+    notify('Reloading nginx configuration')
     sudo('/etc/init.d/nginx force-reload')
 
-def nginx_restart():
-    "Restarts nginx"
-    sudo('/etc/init.d/nginx restart')
+def reload_tomcat():
+    sudo('/etc/init.d/tomcat6 force-reload')
 
-def apache_configtest():
-    "Checks apache config syntax"
-    sudo('/usr/sbin/apache2ctl configtest')
+def upload(local_path, remote_path=None):
+    """
+    Uploads a file
+    """
+    if not remote_path:
+        remote_path = local_path
+    notify("Uploading %s to %s" % (local_path, remote_path))
+    put(local_path, remote_path)
 
-def nginx_configtest():
-    "Checks nginx config syntax"
-    sudo('/usr/sbin/nginx -t')
-    
-def whoosh_setup():
-    "setup the whoosh's search engine permissions"
-    print green('Setting up whoosh')
+def unpack(archive_path):
+    """
+    Unpacks the tarball into the correct place but doesn't switch
+    the symlink
+    """
+    # Ensure all folders are in place
+    sudo('if [ ! -d "%(builds_dir)s" ]; then mkdir -p "%(builds_dir)s"; fi' % env)
+
+    notify("Creating remote build folder")
+    with cd(env.builds_dir):
+        sudo('tar xzf %s' % archive_path)
+
+        # Create new build folder
+        sudo('if [ -d "%(build_dir)s" ]; then rm -rf "%(build_dir)s"; fi' % env)
+        sudo('mv %(web_dir)s %(build_dir)s' % env)
+
+        prepare_infrastructure()
+
+        # Symlink media folder + its permissions
+        sudo('ln -s ../../../media/%(build)s %(build_dir)s/public/media' % env)
+        sudo('chown root:www-data -R %(build_dir)s/public/media' % env)
+        sudo('chmod 775 -R %(build_dir)s/public/media' % env)
+
+        # Append release info to settings.py
+        sudo("sed -i 's/UNVERSIONED/%(version)s/' %(build_dir)s/settings.py" % env)
+
+        # Add file indicating Git commit
+        sudo('echo -e "refspec: %s\nuser: %s" > %s/build-info' % (env.version, env.user, env.build_dir))
+
+        # Remove archive
+        sudo('rm %s' % archive_path)
+
+
+def update_virtualenv():
+    """
+    Install the dependencies in the requirements file
+    """
     with cd(env.code_dir):
-        sudo("chown root:www-data -R whoosh/recipes_index")
-        sudo("sudo chmod 775 -R whoosh/recipes_index")
+        sudo('source %s/bin/activate && pip install -r deploy/requirements.txt' % env.virtualenv)
 
+
+def collect_static_files():
+    notify("Collecting static files")
+    with cd(env.code_dir):
+        sudo('source %s/bin/activate && ./manage.py collectstatic --noinput > /dev/null' % env.virtualenv)
+        sudo('chmod -R g+w public' % env)
+
+
+def migrate():
+    """
+    Apply any schema alterations
+    """
+    notify("Applying database migrations")
+    with cd(env.code_dir):
+        sudo('source %s/bin/activate && ./manage.py syncdb  > /dev/null' % env.virtualenv)
+        sudo('source %s/bin/activate && ./manage.py migrate --ignore-ghost-migrations' % env.virtualenv)
+
+def _apply_deploy_template(file):
+    sudo('sed -i "s#{{ project_code }}#%(project_code)s#g" ' % env + file)
+    sudo('sed -i "s#{{ domain }}#%(domain)s#g" ' % env + file)
+    sudo('sed -i "s#{{ client }}#%(client)s#g" ' % env + file)
+    sudo('sed -i "s#{{ build }}#%(build)s#g" '  % env + file)
+
+def deploy_apache_config():
+    notify('Moving apache config into place')
+    with cd(env.code_dir):
+        _apply_deploy_template('%(apache_conf)s' % env)
+        sudo('mv %(apache_conf)s /etc/apache2/sites-enabled/%(client)s-%(project_code)s-%(build)s.conf' % env)
+
+def deploy_nginx_config():
+    notify('Moving nginx config into place')
+    with cd(env.code_dir):
+        _apply_deploy_template('%(nginx_conf)s' % env)
+        sudo('mv %(nginx_conf)s /etc/nginx/sites-enabled/%(client)s-%(project_code)s-%(build)s.conf' % env)
+
+def deploy_cronjobs():
+    """
+    Deploy the app server cronjobs
+    """
+    notify('Deploying cronjobs')
+    with cd(env.code_dir):
+        # Replace variables in cron files
+        sudo("rename 's#BUILD#%(build)s#' deploy/cron.d/*" % env)
+        sudo("sed -i 's#VIRTUALENV_ROOT#%(virtualenv)s#g' deploy/cron.d/*" % env)
+        sudo("sed -i 's#BUILD_ROOT#%(code_dir)s#g' deploy/cron.d/*" % env)
+        sudo("mv deploy/cron.d/* /etc/cron.d" % env)
+
+def delete_old_builds():
+    notify('Deleting old builds')
+    with cd(env.builds_dir):
+        sudo('find . -maxdepth 1 -type d -name "%(build)s*" | sort -r | sed "1,9d" | xargs rm -rf' % env)
