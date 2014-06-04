@@ -49,10 +49,11 @@
 </head>
 
 <body>
+    <img class='background' src='{{ STATIC_URL }}images/background.jpg' />
     <div style='display:none' id='loading'>loading....</div>
-    <h1><a href='/'>Predictions!</a></h1>
+    <a href='/'><img src='{{ STATIC_URL }}images/tangent-logo.png' /></a>
 
-    <div style='text-align:right;width:800px;'>
+    <div style='text-align:right;'>
         {% if user.is_anonymous %}
             Hi guest, why not to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login here</a><br />
             <a href='/registration/'>Register here</a>
@@ -60,7 +61,7 @@
             Hi {{ user.username }}, <a href='/accounts/logout/'>logout</a> here if you want to
         {% endif %}
         <br />
-        <a href='/'>Home</a> | <a href='/rules/'>Rules</a> | <a href='mailto:matus.moravcik@gmail.com'>Contact</a>
+        <a href='/'>Home</a> | <a href='/rules/'>Rules & scoring</a> | <a href='mailto:matus.moravcik@gmail.com'>Contact</a>
     </div>
 
     <br><br>
@@ -68,10 +69,10 @@
 
     <div class='clear'></div>
 
-
+          <div style='margin-left: 150px'>
             {% block content %}{% endblock %}
-
-    <br><br><div id='footer'>&copy; 2012</div>
+            </div>
+    <br><br><div id='footer'>&copy; 2012-2014</div>
 
 </body>
 

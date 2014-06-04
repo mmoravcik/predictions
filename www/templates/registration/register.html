@@ -3,14 +3,14 @@
 {% block title %}Create an account{% endblock %}
 
 {% block content %}
-      <h1>Create an account</h1>
-      By clicking "Free game" you can choose whatever you want to play just for fun or for money (entry fee for every round is £{{ entry_fee }} and winner takes it all)
+      <h2>Create an account</h2>
+
 
       <form action="." method="post">
         {% csrf_token %}
         {{ form.as_p }}
 
-
+        By clicking "Free game" you can choose whatever you want to play just for fun or for money (entry fee for every round is £{{ entry_fee }} and winner takes it all)
         <input type="submit" value="Create the account" />
 
       </form>
