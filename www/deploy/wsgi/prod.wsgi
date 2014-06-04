@@ -20,5 +20,6 @@ import django.core.handlers.wsgi
 _application = django.core.handlers.wsgi.WSGIHandler()
 
 def application(environ, start_response):
+    print environ['PREDICTIONS_DB_PROD_PASS'],"-----"
     os.environ["PREDICTIONS_DB_PROD_PASS"] = environ['PREDICTIONS_DB_PROD_PASS']
     return _application(environ, start_response)
