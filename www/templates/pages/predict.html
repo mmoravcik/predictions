@@ -18,12 +18,12 @@
 
         <form name='predict_form' id='predict_form' action='/round/predict/submit/' method='post'>
             {% csrf_token %}
-            <table width='600'>
+            <table width='1000'>
                 <tr>
                     <th>Game</th>
                     <th>Date</th>
-                    <th>Home score</th>
-                    <th>Away score</th>
+                    <th>Home goals</th>
+                    <th>Away goals</th>
                 </tr>
             {% for game in games %}
                 <tr>
