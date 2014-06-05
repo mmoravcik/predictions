@@ -133,6 +133,6 @@ div.rating-cancel {
 
 .background { width: 100%; position: fixed; left: 0; right: 0; top: 0; z-index: -1; }
 
-tr:hover {
+.hover_table tr:hover {
     background-color: #0081c2;
 }

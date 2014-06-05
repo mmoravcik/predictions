@@ -26,7 +26,7 @@ function add_time(id, dateobject) {
         {% for round in game_rounds %}
             <tr>
                 <td>{{ round.name }}</td>
-                <td><a href='/round/predict/{{ round.id }}'>&raquo; predict</a> &nbsp; &nbsp; &raquo;<a href='/round/results/{{ round.id }}'>see the results</a></td>
+                <td><a href='/round/predict/{{ round.id }}'>&raquo; predict</a> &nbsp; &nbsp; &raquo; <a href='/round/results/{{ round.id }}'>see the results</a></td>
                 <td style='text-align:center'>
                 {% if round.is_expired %}
                     submissions closed
