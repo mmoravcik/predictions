@@ -5,7 +5,7 @@
 <script type='text/javascript'>
 function add_time(id, dateobject) {
 
-    $(id).countdown({until: dateobject, format: 'OdHMS', layout: 'expires in {dn} {dl} {hn} {hl} {mn} {ml} {sn} {sl}', expiryText: 'submissions closed'});
+    $(id).countdown({until: dateobject, format: 'OdHMS', layout: 'submission expires in <br /> {dn} {dl} {hn} {hl} {mn} {ml} {sn} {sl}', expiryText: 'submissions closed'});
 }
 </script>
 
@@ -15,11 +15,11 @@ function add_time(id, dateobject) {
         You need to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login</a> or <a href='/registration/'>register</a> to be able to use the system
     {% endif %}
     <br />
-    Please click predict to submit your predictions
+    Click on 'predict' to submit your predictions
     <br /><br />
     <table cellpadding='4' width="1000">
         <tr>
-            <th style=''>Round name</th>
+            <th style=''>Round</th>
             <th style=''>Actions</th>
             <th>Status</th>
         </tr>

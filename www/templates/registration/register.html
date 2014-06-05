@@ -10,7 +10,9 @@
         {% csrf_token %}
         {{ form.as_p }}
 
-        By clicking "Free game" you can choose whatever you want to play just for fun or for money (entry fee for every round is £{{ entry_fee }} and winner takes it all)
+          Click `free game` if you would like to play just for fun, so
+          without gambling money. If you wish to bet on your predictions the entry fee is £{{ entry_fee }}
+          <br />
         <input type="submit" value="Create the account" />
 
       </form>

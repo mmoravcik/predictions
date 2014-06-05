@@ -3,29 +3,32 @@
 {% block content %}
 <h2>Rules &amp; scoring</h2>
     <ul>
-        <li>You can register as a 'free' player. It means you can submit your predictions, but u can't win any money. only a good feeling</li>
-        <li>£{{ entry_fee }} entry fee will be collected by admin so please have change ready. This doesn't apply for 'free' players</li>
+        <li>You can register as a 'free game' player. It means that you can submit your predictions, but u can't win any money. Only a good feeling</li>
+        <li>£{{ entry_fee }} entry fee will be collected by your local admin so please have them ready. This doesn't apply for 'free game' players</li>
         <li>Predictions are always for Regular time only. No overtime or penalties</li>
 
 
         <li>
             <strong>Scoring explained</strong><br />
-            {{ point_result }} point for overal game prediction (AWAY, HOME or DRAW), {{ point_goal }} point for every correct goal predicition if result prediction is right
+            {{ point_result }} point for overall game prediction (AWAY, HOME or DRAW), {{ point_goal }} point for every correct goal prediction if result prediction is right
             <br />
-            Examples :<br >
+            Examples :<br ><br >
             Your prediction: 3:1<br />
             Result: 2:1<br />
-            your points: <!-- <strong>2</strong> =  -->{{ point_result }} point for correct overal prediction (HOME win)) + {{ point_goal }} bonus point for exact goal predictioction of away team
+            Your points: <strong>2</strong><br />
+            Explanation: <strong>{{ point_result }}</strong> point for correct overall prediction (HOME win)) + <strong>{{ point_goal }}</strong> bonus point for exact goal prediction of away team
             <br /><br />
             Your prediction: 3:1<br />
             Result: 1:1<br />
-            your points: <!-- <strong>0</strong> = --> 0 points as the overal prediction is wrong (DRAW instead of HOME win). 0 bonus points as the overal prediction is wrong<br />
+            Your points: <strong>0</strong><br />
+            Explanation:  <strong>0</strong> points as the overall prediction is wrong (DRAW instead of HOME win). <strong>0</strong> bonus points as the overall prediction is wrong<br />
             <br />
             Your prediction: 3:1<br />
             Result: 3:1<br />
-            your points: <!-- <strong>3</strong> =  -->{{ point_result}} points as the overal prediction + {{ point_goal }} point for correct home goals + {{ point_goal }} point for correct away goals
+            Your points: <strong>3</strong><br />
+            Explanation: <strong>{{ point_result}}</strong> point as the overall prediction + <strong>{{ point_goal }}</strong> point for correct home goals + <strong>{{ point_goal }}</strong> point for correct away goals
             <br />
-
+            <br >
         </li>
         <li>If two or more players have the same amount of points per round, the player with more successfull exact scores, then exact goal guesses, will win. Split otherwise</li>
         <li>By submitting 2 or more predictions as a paying user you agree to contribute to the pot for the winner</li>

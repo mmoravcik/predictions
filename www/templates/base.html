@@ -49,13 +49,13 @@
 
     <div style='text-align:right;'>
         {% if user.is_anonymous %}
-            Hi guest, why not to <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login here</a><br />
+            Hi guest, please <a href='{% url django.contrib.auth.views.login %}?next={{request.path}}'>login here</a><br />
             <a href='/registration/'>Register here</a>
         {% else %}
-            Hi {{ user.username }}, <a href='/accounts/logout/'>logout</a> here if you want to
+            Hi {{ user.username }}, click here to <a href='/accounts/logout/'>logout</a>
         {% endif %}
         <br />
-        <a href='/'>Home</a> | <a href='/rules/'>Rules & scoring</a>
+        <a href='/'>Home</a> | <a href='/rules/'>Rules &amp; scoring</a>
     </div>
 
     <br><br>
