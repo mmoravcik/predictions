@@ -46,7 +46,7 @@ class Game(CommonInfo):
     
     def display_in_results(self, player, me):
         return self.has_player_predicted(player) \
-            and (self.has_player_predicted(player) or self.game_round.is_expired() or self.is_expired())
+            and (self.has_player_predicted(me) or self.game_round.is_expired() or self.is_expired())
 
     
     def home_away_draw_result(self):
