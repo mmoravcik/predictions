@@ -17,7 +17,8 @@ class GameRound(CommonInfo):
        
     def __unicode__(self):
         return self.name
-    
+
+
 class Game(CommonInfo):
     home_team = models.CharField(max_length=128)
     away_team = models.CharField(max_length=128)
@@ -59,7 +60,8 @@ class Game(CommonInfo):
             return settings.DRAW
         
         return False
-    
+
+
 class GamePrediction(CommonInfo):
     player = models.ForeignKey('player.Profile')
     game = models.ForeignKey('Game')

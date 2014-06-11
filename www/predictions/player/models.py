@@ -1,4 +1,6 @@
 from django.db import models
+from predictions.game.models import GamePrediction
+
 
 class Profile(models.Model):
     '''
@@ -10,4 +12,6 @@ class Profile(models.Model):
     
     
     def __unicode__(self):
-        return self.user.username
+        return "%s, free game: %s, predicted: %s, email: %s" % (
+            self.user.username, self.user.profile.free_game,
+            GamePrediction.objects.filter(player=self).exists(), self.user.email)
